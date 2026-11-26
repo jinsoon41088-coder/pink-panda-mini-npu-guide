@@ -1,0 +1,813 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>핑크판다 JSON과 라벨 정규화 학습</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Malgun Gothic", sans-serif;
+            background: #fff0f6;
+            color: #4a3040;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        header {
+            background: linear-gradient(135deg, #c2185b, #e83e8c);
+            color: white;
+            text-align: center;
+            padding: 35px 15px;
+        }
+
+        .panda {
+            font-size: 70px;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        h2 {
+            color: #c2185b;
+            font-size: 25px;
+        }
+
+        h3 {
+            color: #c2185b;
+        }
+
+        main {
+            max-width: 950px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        section {
+            background: white;
+            border: 2px solid #ffc1dc;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .example {
+            background: #ffe4ef;
+            padding: 18px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        pre {
+            background: #fff0f6;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 17px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+        }
+
+        th, td {
+            border: 1px solid #ffc1dc;
+            padding: 12px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        th {
+            background: #c2185b;
+            color: white;
+        }
+
+        td {
+            background: #fff5fa;
+        }
+
+        button {
+            background: #c2185b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 18px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ad1457;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #f5a9ce;
+            border-radius: 12px;
+            font-size: 22px;
+            margin: 10px 0;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .process {
+            background: #ffe4ef;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .arrow {
+            color: #c2185b;
+            font-size: 30px;
+        }
+
+        .value {
+            color: #c2185b;
+            font-size: 26px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .result {
+            background: white;
+            border: 2px solid #f5a9ce;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .success {
+            color: #18733c;
+        }
+
+        .error {
+            color: #b91c1c;
+        }
+
+        .home-button {
+            display: block;
+            background: #c2185b;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        footer {
+            background: #ffc1dc;
+            padding: 25px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 18px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            table {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="panda">🐼</div>
+
+    <h1>핑크판다 JSON과 라벨 정규화 학습</h1>
+
+    <p>데이터를 정리하고 서로 다른 이름을 통일해요!</p>
+
+</header>
+
+<main>
+
+    <section>
+
+        <h2>📚 1. JSON이란 무엇일까요?</h2>
+
+        <p>
+            JSON은 데이터를 일정한 규칙에 따라
+            저장하고 전달하는 텍스트 형식입니다.
+        </p>
+
+        <p>
+            JSON은 컴퓨터가 정보를 읽고 활용할 수 있도록
+            정리해 놓은 디지털 정보 노트라고 생각하면 됩니다.
+        </p>
+
+        <div class="example">
+
+            🐼 판다 정보 노트<br>
+
+            이름: 핑크판다<br>
+
+            좋아하는 과일: 바나나<br>
+
+            좋아하는 색상: 핑크색
+
+        </div>
+
+        <h3>JSON으로 표현하면?</h3>
+
+        <pre><code>{
+    "name": "핑크판다",
+    "fruit": "바나나",
+    "color": "핑크색"
+}</code></pre>
+
+    </section>
+
+    <section>
+
+        <h2>🔑 2. 키(Key)와 값(Value)</h2>
+
+        <p>
+            키는 정보의 이름이고,
+            값은 그 이름에 해당하는 실제 내용입니다.
+        </p>
+
+        <table>
+
+            <tr>
+                <th>키(Key)</th>
+                <th>값(Value)</th>
+            </tr>
+
+            <tr>
+                <td>name</td>
+                <td>핑크판다</td>
+            </tr>
+
+            <tr>
+                <td>fruit</td>
+                <td>바나나</td>
+            </tr>
+
+            <tr>
+                <td>color</td>
+                <td>핑크색</td>
+            </tr>
+
+        </table>
+
+        <div class="example">
+            키 = 무엇에 대한 정보인지 알려주는 이름<br>
+            값 = 실제로 저장된 정보
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>📂 3. Mini NPU의 data.json 구조</h2>
+
+        <p>
+            Mini NPU 미션에서는 JSON 파일을 이용하여
+            필터, 입력 패턴, 예상 정답 등을 관리합니다.
+        </p>
+
+        <table>
+
+            <tr>
+                <th>항목</th>
+                <th>의미</th>
+            </tr>
+
+            <tr>
+                <td>filters</td>
+                <td>비교할 기준 필터</td>
+            </tr>
+
+            <tr>
+                <td>patterns</td>
+                <td>테스트할 입력 패턴</td>
+            </tr>
+
+            <tr>
+                <td>input</td>
+                <td>입력 숫자 배열</td>
+            </tr>
+
+            <tr>
+                <td>expected</td>
+                <td>예상 정답 라벨</td>
+            </tr>
+
+        </table>
+
+        <h3>학습용 JSON 구조 예시</h3>
+
+        <pre><code>{
+    "filters": {
+        "size_3": {
+            "cross": [
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0]
+            ],
+            "x": [
+                [1, 0, 1],
+                [0, 1, 0],
+                [1, 0, 1]
+            ]
+        }
+    },
+    "patterns": {
+        "size_3_1": {
+            "input": [
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0]
+            ],
+            "expected": "+"
+        }
+    }
+}</code></pre>
+
+        <p>
+            위 코드는 구조를 쉽게 이해하기 위한
+            3×3 배열 학습용 예시입니다.
+            실제 미션 데이터에는 5×5, 13×13,
+            25×25 등의 배열이 사용됩니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>📏 4. data.json의 키 규칙</h2>
+
+        <div class="example">
+            size_N = N×N 크기의 필터 그룹<br>
+            size_N_idx = 크기와 테스트 번호
+        </div>
+
+        <table>
+
+            <tr>
+                <th>키 이름</th>
+                <th>배열 크기</th>
+                <th>번호</th>
+            </tr>
+
+            <tr>
+                <td>size_5_1</td>
+                <td>5×5</td>
+                <td>1번</td>
+            </tr>
+
+            <tr>
+                <td>size_13_2</td>
+                <td>13×13</td>
+                <td>2번</td>
+            </tr>
+
+            <tr>
+                <td>size_25_1</td>
+                <td>25×25</td>
+                <td>1번</td>
+            </tr>
+
+        </table>
+
+        <p>
+            프로그램은 키 이름에서 배열 크기를 확인하고
+            해당 크기의 필터를 찾아 비교합니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>🏷️ 5. 라벨 정규화란 무엇일까요?</h2>
+
+        <p>
+            라벨은 데이터의 종류나 정답을 나타내는 이름입니다.
+        </p>
+
+        <p>
+            라벨 정규화는 같은 의미를 가진 서로 다른 표현을
+            하나의 표준 이름으로 통일하는 과정입니다.
+        </p>
+
+        <div class="example">
+            🐼 panda, Panda, PANDA<br>
+            모두 같은 판다를 나타낼 수 있지만
+            컴퓨터에서는 서로 다른 문자열입니다.
+        </div>
+
+        <table>
+
+            <tr>
+                <th>원본 라벨</th>
+                <th>정규화 결과</th>
+            </tr>
+
+            <tr>
+                <td>+</td>
+                <td>Cross</td>
+            </tr>
+
+            <tr>
+                <td>cross</td>
+                <td>Cross</td>
+            </tr>
+
+            <tr>
+                <td>Cross</td>
+                <td>Cross</td>
+            </tr>
+
+            <tr>
+                <td>x</td>
+                <td>X</td>
+            </tr>
+
+            <tr>
+                <td>X</td>
+                <td>X</td>
+            </tr>
+
+        </table>
+
+        <p>
+            UNDECIDED는 두 점수의 차이가 허용오차보다
+            작을 때 사용하는 별도의 판정 결과입니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>🎮 6. 라벨 정규화 직접 체험하기</h2>
+
+        <p>
+            아래 버튼을 누르거나 직접 라벨을 입력하고
+            정규화 결과를 확인해 보세요.
+        </p>
+
+        <div class="button-group">
+
+            <button onclick="selectLabel('+')">+</button>
+
+            <button onclick="selectLabel('cross')">cross</button>
+
+            <button onclick="selectLabel('Cross')">Cross</button>
+
+            <button onclick="selectLabel('CROSS')">CROSS</button>
+
+            <button onclick="selectLabel('x')">x</button>
+
+            <button onclick="selectLabel('X')">X</button>
+
+            <button onclick="selectLabel('  Cross  ')">
+                공백 있는 Cross
+            </button>
+
+            <button onclick="selectLabel('UNDECIDED')">
+                UNDECIDED
+            </button>
+
+            <button onclick="selectLabel('panda')">
+                panda
+            </button>
+
+        </div>
+
+        <label for="label-input">
+            원본 라벨 입력
+        </label>
+
+        <input
+            id="label-input"
+            type="text"
+            placeholder="라벨을 입력하세요"
+            value="cross"
+            oninput="normalizeLabel()"
+        >
+
+        <div class="button-group">
+
+            <button onclick="normalizeLabel()">
+                정규화 실행하기
+            </button>
+
+            <button onclick="resetLabel()">
+                초기화
+            </button>
+
+        </div>
+
+        <div class="process" aria-live="polite">
+
+            <h3>① 원본 라벨</h3>
+
+            <div id="original" class="value"></div>
+
+            <div class="arrow">↓</div>
+
+            <h3>② 앞뒤 공백 제거</h3>
+
+            <div id="trimmed" class="value"></div>
+
+            <div class="arrow">↓</div>
+
+            <h3>③ 소문자로 변환</h3>
+
+            <div id="lowercase" class="value"></div>
+
+            <div class="arrow">↓</div>
+
+            <h3>④ 최종 정규화 결과</h3>
+
+            <div class="result">
+
+                <div id="normalized" class="value"></div>
+
+                <p id="message"></p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>💻 7. Python 코드로 이해하기</h2>
+
+        <pre><code>def normalize_label(label):
+
+    if not isinstance(label, str):
+        raise ValueError("라벨은 문자열이어야 합니다.")
+
+    label = label.strip().lower()
+
+    if label in ("+", "cross"):
+        return "Cross"
+
+    elif label == "x":
+        return "X"
+
+    elif label == "undecided":
+        return "UNDECIDED"
+
+    else:
+        raise ValueError("지원하지 않는 라벨입니다.")</code></pre>
+
+        <h3>코드의 의미</h3>
+
+        <p>
+            isinstance(): 문자열인지 확인합니다.
+        </p>
+
+        <p>
+            strip(): 문자열 앞뒤의 공백을 제거합니다.
+        </p>
+
+        <p>
+            lower(): 영어 대문자를 소문자로 변환합니다.
+        </p>
+
+        <p>
+            return: 정규화된 결과를 반환합니다.
+        </p>
+
+        <p>
+            ValueError: 지원하지 않는 값이 들어오면
+            오류를 발생시킵니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>⚠️ 8. 정규화가 필요한 이유</h2>
+
+        <p>
+            실제 판정 결과가 Cross이고
+            예상 정답이 +라고 가정해 봅시다.
+        </p>
+
+        <div class="example">
+
+            정규화 전<br>
+
+            Cross == + → False → FAIL
+
+        </div>
+
+        <div class="example">
+
+            정규화 후<br>
+
+            Cross == Cross → True → PASS
+
+        </div>
+
+        <p>
+            같은 의미의 정답이라도 문자열 표현이 다르면
+            잘못된 실패 판정이 발생할 수 있습니다.
+        </p>
+
+        <p>
+            따라서 비교하기 전에 라벨을 표준화해야 합니다.
+        </p>
+
+        <p>
+            단, 정규화는 잘못된 계산 결과를
+            올바른 정답으로 바꾸는 기능이 아닙니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>🎯 9. 동료평가 예상 질문과 답변</h2>
+
+        <p><strong>Q. JSON이 무엇인가요?</strong></p>
+
+        <p>
+            A. 데이터를 일정한 규칙에 따라 저장하고
+            전달하는 텍스트 형식입니다.
+        </p>
+
+        <p><strong>Q. 키와 값의 차이는 무엇인가요?</strong></p>
+
+        <p>
+            A. 키는 정보의 이름이고,
+            값은 실제 저장된 정보입니다.
+        </p>
+
+        <p><strong>Q. size_13_2는 무엇을 의미하나요?</strong></p>
+
+        <p>
+            A. 13×13 크기의 두 번째 테스트 패턴을 의미합니다.
+        </p>
+
+        <p><strong>Q. 라벨 정규화란 무엇인가요?</strong></p>
+
+        <p>
+            A. 같은 의미를 가진 서로 다른 라벨을
+            하나의 표준 이름으로 통일하는 과정입니다.
+        </p>
+
+        <p><strong>Q. 라벨 정규화가 왜 필요한가요?</strong></p>
+
+        <p>
+            A. 같은 의미의 라벨이 서로 다른 문자열로
+            표현되어 잘못된 실패 판정이 발생하는 것을
+            방지하기 위해 필요합니다.
+        </p>
+
+        <p><strong>Q. 지원하지 않는 라벨은 어떻게 처리하나요?</strong></p>
+
+        <p>
+            A. 임의로 정답으로 변경하지 않고
+            오류로 처리하여 원인을 확인합니다.
+        </p>
+
+    </section>
+
+    <a href="pattern.html" class="home-button">
+        🔍 이전 학습: 입력 패턴과 필터
+    </a>
+
+    <a href="index.html" class="home-button">
+        🏠 메인 홈페이지로 돌아가기
+    </a>
+
+</main>
+
+<footer>
+
+    🐼 Pink Panda Mini NPU Guide 🐼
+
+    <br>
+
+    🌸 데이터를 정리하고 AI 계산 원리를 배워요 🌸
+
+</footer>
+
+<script>
+
+    function normalizeLabel() {
+
+        const raw = document.getElementById(
+            "label-input"
+        ).value;
+
+        const trimmed = raw.trim();
+
+        const lower = trimmed.toLowerCase();
+
+        let result = "";
+
+        let message = "";
+
+        let valid = true;
+
+        if (lower === "+" || lower === "cross") {
+
+            result = "Cross";
+
+            message = "십자가 라벨로 정규화되었습니다.";
+
+        } else if (lower === "x") {
+
+            result = "X";
+
+            message = "X 라벨로 정규화되었습니다.";
+
+        } else if (lower === "undecided") {
+
+            result = "UNDECIDED";
+
+            message = "별도의 판정 불가 결과입니다.";
+
+        } else {
+
+            result = "ERROR";
+
+            message = "지원하지 않는 라벨입니다.";
+
+            valid = false;
+
+        }
+
+        document.getElementById("original").textContent =
+            JSON.stringify(raw);
+
+        document.getElementById("trimmed").textContent =
+            JSON.stringify(trimmed);
+
+        document.getElementById("lowercase").textContent =
+            JSON.stringify(lower);
+
+        document.getElementById("normalized").textContent =
+            result;
+
+        const messageElement =
+            document.getElementById("message");
+
+        messageElement.textContent = message;
+
+        messageElement.className =
+            valid ? "success" : "error";
+
+    }
+
+    function selectLabel(value) {
+
+        document.getElementById("label-input").value =
+            value;
+
+        normalizeLabel();
+
+    }
+
+    function resetLabel() {
+
+        document.getElementById("label-input").value = "";
+
+        normalizeLabel();
+
+    }
+
+    normalizeLabel();
+
+</script>
+
+</body>
+</html>

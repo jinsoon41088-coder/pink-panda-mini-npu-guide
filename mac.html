@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>핑크판다 MAC 연산 학습</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Malgun Gothic", sans-serif;
+            background: #fff0f6;
+            color: #4a3040;
+            line-height: 1.8;
+            font-size: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #c2185b, #e83e8c);
+            color: white;
+            text-align: center;
+            padding: 35px 15px;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        h2 {
+            color: #c2185b;
+            font-size: 25px;
+        }
+
+        main {
+            max-width: 950px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        section {
+            background: white;
+            border: 2px solid #ffc1dc;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .panda {
+            font-size: 70px;
+        }
+
+        .formula {
+            background: #ffe4ef;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 65px);
+            gap: 6px;
+            justify-content: center;
+            margin: 15px auto;
+        }
+
+        .cell {
+            width: 65px;
+            height: 65px;
+            border: 2px solid #f5a9ce;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 27px;
+            font-weight: bold;
+            background: #fff0f6;
+            color: #c2185b;
+        }
+
+        .active {
+            background: #d63384;
+            color: white;
+        }
+
+        button {
+            background: #c2185b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 18px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ad1457;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 3px solid #673ab7;
+            outline-offset: 3px;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .filter-box {
+            background: #fff5fa;
+            border: 2px solid #ffc1dc;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .score {
+            color: #c2185b;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .result {
+            background: #ffe4ef;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .home-button {
+            display: block;
+            background: #c2185b;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #ffc1dc;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            body {
+                font-size: 18px;
+            }
+
+            .formula {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="panda">🐼</div>
+    <h1>핑크판다 MAC 연산 학습</h1>
+    <p>곱하고 더하는 AI 계산의 기본 원리</p>
+</header>
+
+<main>
+
+    <section>
+        <h2>📚 1. MAC 연산이란?</h2>
+
+        <p>MAC은 Multiply-Accumulate의 줄임말입니다.</p>
+
+        <p>Multiply는 곱하기, Accumulate는 누적해서 더하기라는 뜻입니다.</p>
+
+        <div class="formula">
+            곱하기 → 누적해서 더하기 → 점수 계산
+        </div>
+    </section>
+
+    <section>
+        <h2>🍌 2. 바나나와 사과로 이해하기</h2>
+
+        <p>🍌 바나나 3개 × 500원 = 1,500원</p>
+
+        <p>🍎 사과 2개 × 1,000원 = 2,000원</p>
+
+        <div class="formula">
+            1,500 + 2,000 = 3,500원
+        </div>
+
+        <p>
+            각각 곱한 결과를 모두 더하는 것이
+            MAC 연산의 기본 원리입니다.
+        </p>
+    </section>
+
+    <section>
+        <h2>🎮 3. MAC 연산 직접 체험하기</h2>
+
+        <p>
+            아래 버튼으로 입력 패턴을 선택하거나
+            숫자 칸을 직접 눌러보세요.
+        </p>
+
+        <div class="button-group">
+            <button onclick="setCross()">십자가 입력</button>
+            <button onclick="setX()">X 입력</button>
+            <button onclick="resetPattern()">초기화</button>
+        </div>
+
+        <h3 style="text-align:center;">입력 패턴</h3>
+
+        <div id="input-matrix" class="matrix"></div>
+
+        <div class="comparison">
+
+            <div class="filter-box">
+                <h3>십자가 필터</h3>
+
+                <div id="cross-matrix" class="matrix"></div>
+
+                <h3>위치별 곱셈 결과</h3>
+
+                <div id="cross-product" class="matrix"></div>
+
+                <p>MAC 점수</p>
+
+                <div id="cross-score" class="score">0점</div>
+            </div>
+
+            <div class="filter-box">
+                <h3>X 필터</h3>
+
+                <div id="x-matrix" class="matrix"></div>
+
+                <h3>위치별 곱셈 결과</h3>
+
+                <div id="x-product" class="matrix"></div>
+
+                <p>MAC 점수</p>
+
+                <div id="x-score" class="score">0점</div>
+            </div>
+
+        </div>
+
+        <div id="result" class="result" aria-live="polite">
+            판정 결과
+        </div>
+
+    </section>
+
+    <section>
+        <h2>🎯 4. 동료평가 핵심 답변</h2>
+
+        <p><strong>Q. MAC 연산이 무엇인가요?</strong></p>
+
+        <p>
+            A. 입력 패턴과 필터의 같은 위치에 있는
+            숫자끼리 곱하고 그 결과를 모두 더하는 연산입니다.
+        </p>
+
+        <p><strong>Q. AI에서 왜 중요한가요?</strong></p>
+
+        <p>
+            A. 많은 AI 모델이 이미지와 음성 등의 데이터를
+            처리할 때 MAC 연산을 반복적으로 사용하기 때문입니다.
+        </p>
+
+        <p><strong>Q. NPU란 무엇인가요?</strong></p>
+
+        <p>
+            A. MAC 연산 등 AI 계산을 효율적으로
+            처리하도록 설계된 AI 전용 처리 장치입니다.
+        </p>
+    </section>
+
+    <a href="index.html" class="home-button">
+        🏠 메인 홈페이지로 돌아가기
+    </a>
+
+</main>
+
+<footer>
+    🐼 Pink Panda Mini NPU Guide 🐼
+    <br>
+    🌸 쉽고 재미있게 배우는 AI 계산 원리 🌸
+</footer>
+
+<script>
+    const cross = [
+        0, 1, 0,
+        1, 1, 1,
+        0, 1, 0
+    ];
+
+    const xFilter = [
+        1, 0, 1,
+        0, 1, 0,
+        1, 0, 1
+    ];
+
+    let pattern = [...cross];
+
+    function drawMatrix(id, values, clickable = false) {
+        const container = document.getElementById(id);
+
+        container.innerHTML = "";
+
+        values.forEach((value, index) => {
+            const cell = document.createElement(
+                clickable ? "button" : "div"
+            );
+
+            cell.className = "cell";
+
+            if (value === 1) {
+                cell.classList.add("active");
+            }
+
+            cell.textContent = value;
+
+            if (clickable) {
+                cell.style.margin = "0";
+                cell.style.padding = "0";
+
+                cell.setAttribute(
+                    "aria-label",
+                    `${index + 1}번째 칸: ${value}`
+                );
+
+                cell.onclick = function () {
+                    pattern[index] = pattern[index] === 0 ? 1 : 0;
+                    update();
+                };
+            }
+
+            container.appendChild(cell);
+        });
+    }
+
+    function calculateMAC(input, filter) {
+        let score = 0;
+
+        for (let i = 0; i < input.length; i++) {
+            score += input[i] * filter[i];
+        }
+
+        return score;
+    }
+
+    function update() {
+        drawMatrix("input-matrix", pattern, true);
+
+        drawMatrix("cross-matrix", cross);
+
+        drawMatrix("x-matrix", xFilter);
+
+        const crossProduct = pattern.map(
+            (value, index) => value * cross[index]
+        );
+
+        const xProduct = pattern.map(
+            (value, index) => value * xFilter[index]
+        );
+
+        drawMatrix("cross-product", crossProduct);
+
+        drawMatrix("x-product", xProduct);
+
+        const crossScore = calculateMAC(pattern, cross);
+
+        const xScore = calculateMAC(pattern, xFilter);
+
+        document.getElementById("cross-score").textContent =
+            crossScore + "점";
+
+        document.getElementById("x-score").textContent =
+            xScore + "점";
+
+        const result = document.getElementById("result");
+
+        const epsilon = 1e-9;
+
+        if (Math.abs(crossScore - xScore) < epsilon) {
+            result.textContent = "⚖️ 판정 불가 (UNDECIDED)";
+        } else if (crossScore > xScore) {
+            result.textContent = "🎉 십자가 (Cross)";
+        } else {
+            result.textContent = "🎉 X 모양 (X)";
+        }
+    }
+
+    function setCross() {
+        pattern = [...cross];
+        update();
+    }
+
+    function setX() {
+        pattern = [...xFilter];
+        update();
+    }
+
+    function resetPattern() {
+        pattern = Array(9).fill(0);
+        update();
+    }
+
+    update();
+</script>
+
+</body>
+</html>

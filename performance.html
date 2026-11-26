@@ -1,0 +1,1463 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>핑크판다 성능 분석과 O(N²) 학습</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Malgun Gothic", sans-serif;
+            background: #fff0f6;
+            color: #4a3040;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        header {
+            background: linear-gradient(135deg, #c2185b, #e83e8c);
+            color: white;
+            text-align: center;
+            padding: 35px 15px;
+        }
+
+        .panda {
+            font-size: 70px;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        h2 {
+            color: #c2185b;
+            font-size: 25px;
+        }
+
+        h3 {
+            color: #c2185b;
+        }
+
+        main {
+            max-width: 950px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        section {
+            background: white;
+            border: 2px solid #ffc1dc;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .example {
+            background: #ffe4ef;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .number {
+            color: #c2185b;
+            font-size: 28px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .result {
+            background: #fff0f6;
+            border: 2px solid #ffc1dc;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        pre {
+            background: #fff0f6;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 17px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+        }
+
+        th, td {
+            border: 1px solid #ffc1dc;
+            padding: 12px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        th {
+            background: #c2185b;
+            color: white;
+        }
+
+        td {
+            background: #fff5fa;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        button {
+            background: #c2185b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 18px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ad1457;
+        }
+
+        button.active {
+            background: #831843;
+            outline: 3px solid #f9a8d4;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .matrix {
+            display: grid;
+            gap: 2px;
+            max-width: 420px;
+            margin: 20px auto;
+        }
+
+        .cell {
+            background: #fbcfe8;
+            color: #831843;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .filled {
+            background: #db2777;
+            color: white;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .bar-label {
+            width: 65px;
+            font-weight: bold;
+        }
+
+        .bar-track {
+            flex: 1;
+            background: #fce7f3;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar {
+            background: #db2777;
+            height: 28px;
+            border-radius: 8px;
+        }
+
+        .bar-value {
+            width: 65px;
+            text-align: right;
+        }
+
+        .home-button {
+            display: block;
+            background: #c2185b;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        footer {
+            background: #ffc1dc;
+            padding: 25px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 18px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            table {
+                font-size: 16px;
+            }
+
+            .number {
+                font-size: 23px;
+            }
+
+            section {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="panda">🐼</div>
+
+    <h1>핑크판다 성능 분석과 O(N²) 학습</h1>
+
+    <p>배열 크기와 계산 시간의 관계를 배워요!</p>
+
+</header>
+
+<main>
+
+    <section>
+
+        <h2>📚 1. 성능 분석이란 무엇일까요?</h2>
+
+        <p>
+            성능 분석은 프로그램이 얼마나 많은 계산을 하고
+            실행하는 데 얼마나 시간이 걸리는지
+            확인하는 과정입니다.
+        </p>
+
+        <div class="example">
+
+            🐼 성능 분석에서 확인하는 내용<br><br>
+
+            ① 입력 데이터의 크기<br>
+
+            ② 계산해야 하는 연산 횟수<br>
+
+            ③ 프로그램의 실행 시간<br>
+
+            ④ 데이터 크기가 증가할 때의 변화
+
+        </div>
+
+        <p>
+            Mini NPU 미션에서는 배열 크기를 변경하면서
+            MAC 연산 횟수와 실행 시간을 비교합니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>🎋 2. 판다와 대나무로 쉽게 이해하기</h2>
+
+        <p>
+            핑크판다가 대나무를 정사각형 모양으로
+            심었다고 생각해 봅시다.
+        </p>
+
+        <div class="example" style="text-align: center;">
+
+            🎋 🎋 🎋<br>
+
+            🎋 🎋 🎋<br>
+
+            🎋 🎋 🎋<br><br>
+
+            가로 3개 × 세로 3개
+
+            <div class="number">
+                총 9개
+            </div>
+
+        </div>
+
+        <p>
+            대나무를 하나씩 확인하려면
+            총 9번 확인해야 합니다.
+        </p>
+
+        <p>
+            가로와 세로가 각각 5개라면
+            25번 확인해야 합니다.
+        </p>
+
+        <p>
+            컴퓨터가 배열의 모든 칸을 계산하는
+            원리도 이와 비슷합니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>📐 3. 시간 복잡도 O(N²)란?</h2>
+
+        <p>
+            시간 복잡도는 입력 데이터의 크기가 커질 때
+            알고리즘의 작업량이 얼마나 증가하는지
+            나타내는 방법입니다.
+        </p>
+
+        <div class="result">
+
+            N = 정사각형 배열의 한 변의 길이
+
+            <div class="number">
+                N × N = N²
+            </div>
+
+            <div class="number">
+                O(N²)
+            </div>
+
+        </div>
+
+        <p>
+            배열의 가로와 세로 길이가 각각 N이고
+            모든 칸을 한 번씩 계산한다면
+            총 N²번의 MAC 연산이 필요합니다.
+        </p>
+
+        <div class="example">
+
+            배열의 한 변이 2배가 되면<br>
+
+            연산 횟수는 2 × 2 = 4배<br><br>
+
+            배열의 한 변이 3배가 되면<br>
+
+            연산 횟수는 3 × 3 = 9배
+
+        </div>
+
+        <p>
+            따라서 이 방식의 MAC 연산 시간 복잡도는
+            O(N²)입니다.
+        </p>
+
+        <p>
+            O(N²)는 정확한 실행 시간을 의미하는 것이 아니라
+            입력 크기에 따른 작업량의 증가 형태를
+            나타냅니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>🎮 4. 배열 크기와 MAC 연산 직접 체험하기</h2>
+
+        <p>
+            아래 버튼을 눌러 배열 크기를 변경하고
+            MAC 연산 횟수를 확인해 보세요.
+        </p>
+
+        <div class="button-group">
+
+            <button id="size-3" onclick="selectSize(3)">
+                3×3
+            </button>
+
+            <button id="size-5" onclick="selectSize(5)">
+                5×5
+            </button>
+
+            <button id="size-13" onclick="selectSize(13)">
+                13×13
+            </button>
+
+            <button id="size-25" onclick="selectSize(25)">
+                25×25
+            </button>
+
+        </div>
+
+        <div class="result">
+
+            <h3 id="matrix-title"></h3>
+
+            <div id="matrix" class="matrix"></div>
+
+            <p>
+                진한 핑크색: 1<br>
+                연한 핑크색: 0
+            </p>
+
+            <h3>필터 1개의 MAC 연산 횟수</h3>
+
+            <div id="single-count" class="number"></div>
+
+            <h3>필터 2개의 MAC 연산 횟수</h3>
+
+            <div id="double-count" class="number"></div>
+
+            <h3>3×3 배열 대비 연산 횟수</h3>
+
+            <div id="ratio" class="number"></div>
+
+        </div>
+
+        <p>
+            배열의 값이 0인 칸도 이중 반복문으로
+            모든 위치를 방문하는 방식에서는
+            MAC 연산 횟수에 포함됩니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>📊 5. 크기별 MAC 연산 횟수 비교</h2>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <tr>
+                    <th>배열 크기</th>
+                    <th>필터 1개</th>
+                    <th>필터 2개</th>
+                </tr>
+
+                <tr>
+                    <td>3×3</td>
+                    <td>9회</td>
+                    <td>18회</td>
+                </tr>
+
+                <tr>
+                    <td>5×5</td>
+                    <td>25회</td>
+                    <td>50회</td>
+                </tr>
+
+                <tr>
+                    <td>13×13</td>
+                    <td>169회</td>
+                    <td>338회</td>
+                </tr>
+
+                <tr>
+                    <td>25×25</td>
+                    <td>625회</td>
+                    <td>1,250회</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <h3>필터 하나의 연산 횟수 그래프</h3>
+
+        <div id="operation-chart"></div>
+
+        <p>
+            필터 두 개를 비교하면 2N²번의 MAC 연산이
+            필요합니다.
+        </p>
+
+        <p>
+            시간 복잡도에서는 고정된 상수 2를 생략하므로
+            필터가 두 개여도 O(N²)입니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>💻 6. Python 이중 반복문으로 이해하기</h2>
+
+        <pre><code>def mac(pattern, filter_data):
+
+    n = len(pattern)
+
+    score = 0.0
+
+    for i in range(n):
+
+        for j in range(n):
+
+            score += pattern[i][j] * filter_data[i][j]
+
+    return score</code></pre>
+
+        <h3>코드의 의미</h3>
+
+        <p>
+            <strong>n = len(pattern)</strong><br>
+            배열의 행 개수를 확인합니다.
+        </p>
+
+        <p>
+            <strong>score = 0.0</strong><br>
+            계산 결과를 저장할 점수를 초기화합니다.
+        </p>
+
+        <p>
+            <strong>for i in range(n)</strong><br>
+            바깥 반복문은 행을 이동합니다.
+        </p>
+
+        <p>
+            <strong>for j in range(n)</strong><br>
+            안쪽 반복문은 열을 이동합니다.
+        </p>
+
+        <p>
+            <strong>score +=</strong><br>
+            각 위치의 두 값을 곱하고
+            이전 계산 결과에 더합니다.
+        </p>
+
+        <p>
+            <strong>return score</strong><br>
+            모든 계산이 끝나면 최종 점수를 반환합니다.
+        </p>
+
+        <div class="example">
+
+            바깥 반복문: N번<br>
+
+            안쪽 반복문: N번<br><br>
+
+            전체 MAC 연산: N × N = N²번
+
+        </div>
+
+        <p>
+            위 코드는 입력과 필터가 동일한 크기의
+            유효한 정사각형 배열이라는 전제의 예시입니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>⏱️ 7. 실행 시간은 어떻게 측정할까요?</h2>
+
+        <p>
+            프로그램을 한 번만 실행하면
+            컴퓨터의 상태에 따라 측정 결과가
+            달라질 수 있습니다.
+        </p>
+
+        <p>
+            따라서 같은 계산을 여러 번 실행하고
+            평균 실행 시간을 구합니다.
+        </p>
+
+        <div class="example">
+
+            ① 입력 배열과 필터 준비<br>
+
+            ② 시작 시간 기록<br>
+
+            ③ MAC 연산 실행<br>
+
+            ④ 종료 시간 기록<br>
+
+            ⑤ 실행 시간 계산<br>
+
+            ⑥ 10회 반복<br>
+
+            ⑦ 평균 실행 시간 계산
+
+        </div>
+
+        <h3>Python 실행 시간 측정 예시</h3>
+
+        <pre><code>import time
+
+def measure_time(pattern, filter_data):
+
+    times = []
+
+    for _ in range(10):
+
+        start = time.perf_counter()
+
+        mac(pattern, filter_data)
+
+        end = time.perf_counter()
+
+        elapsed_ms = (end - start) * 1000
+
+        times.append(elapsed_ms)
+
+    average = sum(times) / len(times)
+
+    return average</code></pre>
+
+        <p>
+            time.perf_counter()는 실행 시간을
+            측정하는 데 적합한 Python 함수입니다.
+        </p>
+
+        <p>
+            초 단위 결과에 1000을 곱하면
+            밀리초(ms) 단위로 변환할 수 있습니다.
+        </p>
+
+        <p>
+            파일 읽기, 배열 생성, 화면 출력 등은
+            MAC 연산 측정 시간에서 제외합니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>🔬 8. 실제 실행 시간 측정 체험하기</h2>
+
+        <p>
+            선택한 배열의 십자가와 X 필터를 비교하고
+            실제 브라우저에서 MAC 연산 시간을 측정합니다.
+        </p>
+
+        <div class="result">
+
+            현재 선택한 배열
+
+            <div id="benchmark-size" class="number">
+                3×3
+            </div>
+
+            <p>
+                반복 측정 횟수: 10회<br>
+
+                각 측정에서 필터 2개 비교를
+                1,000번 반복합니다.
+            </p>
+
+        </div>
+
+        <div class="button-group">
+
+            <button id="measure-button" onclick="measureSelected()">
+                ⏱️ 선택한 배열 측정하기
+            </button>
+
+            <button id="all-button" onclick="measureAll()">
+                📊 모든 배열 크기 측정하기
+            </button>
+
+            <button id="reset-button" onclick="resetResults()">
+                🔄 측정 결과 초기화
+            </button>
+
+        </div>
+
+        <div class="result" aria-live="polite">
+
+            <p id="benchmark-status">
+                측정 버튼을 눌러주세요.
+            </p>
+
+            <h3>필터 2개 비교 1회당 평균 실행 시간</h3>
+
+            <div id="average-time" class="number">
+                -
+            </div>
+
+            <p id="benchmark-score"></p>
+
+        </div>
+
+        <h3>10회 측정 결과</h3>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>측정 번호</th>
+                        <th>비교 1회당 시간(ms)</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="trial-results"></tbody>
+
+            </table>
+
+        </div>
+
+        <h3>배열 크기별 평균 실행 시간</h3>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>배열 크기</th>
+                        <th>MAC 횟수</th>
+                        <th>평균 시간(ms)</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="summary-results">
+
+                    <tr>
+                        <td>3×3</td>
+                        <td>18회</td>
+                        <td id="time-3">미측정</td>
+                    </tr>
+
+                    <tr>
+                        <td>5×5</td>
+                        <td>50회</td>
+                        <td id="time-5">미측정</td>
+                    </tr>
+
+                    <tr>
+                        <td>13×13</td>
+                        <td>338회</td>
+                        <td id="time-13">미측정</td>
+                    </tr>
+
+                    <tr>
+                        <td>25×25</td>
+                        <td>1,250회</td>
+                        <td id="time-25">미측정</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <h3>실제 측정 시간 비교 그래프</h3>
+
+        <div id="time-chart">
+            아직 측정하지 않았습니다.
+        </div>
+
+        <div class="example">
+
+            ※ 브라우저의 시간 측정 정밀도 문제를 줄이기 위해
+            한 번의 측정에서 1,000번 반복하고
+            그 시간을 1,000으로 나눕니다.<br><br>
+
+            ※ 이 과정 전체를 10회 반복하여
+            평균 실행 시간을 계산합니다.<br><br>
+
+            ※ 배열 생성과 화면 출력은
+            측정 시간에서 제외합니다.<br><br>
+
+            ※ 이 결과는 JavaScript의 실제 측정값이며
+            Python 프로그램의 측정값과는 다를 수 있습니다.
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>📈 9. 측정 결과를 어떻게 분석할까요?</h2>
+
+        <p>
+            배열 크기가 커지면 계산해야 하는
+            MAC 연산 횟수가 증가합니다.
+        </p>
+
+        <p>
+            일반적으로 연산 횟수가 증가하면
+            실행 시간도 증가하는 경향이 있습니다.
+        </p>
+
+        <div class="example">
+
+            3×3 배열: 9회<br>
+
+            25×25 배열: 625회<br><br>
+
+            필터 하나 기준 연산 횟수 증가 비율
+
+            <div class="number">
+                625 ÷ 9 ≈ 69.44배
+            </div>
+
+        </div>
+
+        <p>
+            하지만 연산 횟수가 약 69.44배 증가한다고 해서
+            실제 실행 시간도 반드시
+            69.44배 증가하는 것은 아닙니다.
+        </p>
+
+        <p>
+            컴퓨터 성능, 메모리, 브라우저 최적화,
+            다른 프로그램의 실행 상태 등이
+            측정 결과에 영향을 줄 수 있습니다.
+        </p>
+
+        <p>
+            시간 복잡도는 반복문의 구조와
+            연산 횟수를 근거로 설명하고,
+            실행 시간은 실제 측정 결과를 통해
+            그 경향을 확인합니다.
+        </p>
+
+    </section>
+
+    <section>
+
+        <h2>🎯 10. 동료평가 예상 질문과 답변</h2>
+
+        <p>
+            <strong>Q1. 성능 분석이란 무엇인가요?</strong>
+        </p>
+
+        <p>
+            A. 프로그램의 연산 횟수와 실행 시간 등을
+            측정하고 분석하는 과정입니다.
+        </p>
+
+        <p>
+            <strong>Q2. O(N²)는 무엇을 의미하나요?</strong>
+        </p>
+
+        <p>
+            A. 배열 한 변의 길이가 N일 때
+            작업량이 N의 제곱에 비례하는 형태로
+            증가한다는 의미입니다.
+        </p>
+
+        <p>
+            <strong>Q3. 5×5 배열의 MAC 연산 횟수는?</strong>
+        </p>
+
+        <p>
+            A. 필터 하나를 기준으로
+            5 × 5 = 25회입니다.
+        </p>
+
+        <p>
+            <strong>Q4. 25×25 배열에서 필터 두 개를 비교하면?</strong>
+        </p>
+
+        <p>
+            A. 25 × 25 × 2 = 1,250회입니다.
+        </p>
+
+        <p>
+            <strong>Q5. 이중 반복문이 왜 O(N²)인가요?</strong>
+        </p>
+
+        <p>
+            A. 바깥 반복문이 N번 실행되고
+            각 실행마다 안쪽 반복문이 N번 실행되어
+            총 N²번 계산하기 때문입니다.
+        </p>
+
+        <p>
+            <strong>Q6. 실행 시간을 여러 번 측정하는 이유는?</strong>
+        </p>
+
+        <p>
+            A. 한 번의 측정에서 발생할 수 있는
+            시간 변동의 영향을 줄이고
+            평균 실행 시간을 확인하기 위해서입니다.
+        </p>
+
+        <p>
+            <strong>Q7. 파일 읽기 시간을 제외하는 이유는?</strong>
+        </p>
+
+        <p>
+            A. 파일 처리 시간이 아니라
+            MAC 연산 자체의 성능을 비교하기 위해서입니다.
+        </p>
+
+        <p>
+            <strong>Q8. 필터가 두 개이면 왜 O(2N²)가 아닌가요?</strong>
+        </p>
+
+        <p>
+            A. 실제 연산 횟수는 2N²이지만
+            시간 복잡도에서는 고정된 상수를 생략하므로
+            O(N²)로 표현합니다.
+        </p>
+
+        <p>
+            <strong>Q9. 실행 시간도 반드시 N²에 비례하나요?</strong>
+        </p>
+
+        <p>
+            A. 실제 실행 시간은 컴퓨터와 실행 환경에
+            영향을 받으므로 정확히 비례하지 않을 수 있습니다.
+        </p>
+
+    </section>
+
+    <a href="epsilon.html" class="home-button">
+        🔢 이전 학습: 부동소수점과 epsilon
+    </a>
+
+    <a href="index.html" class="home-button">
+        🏠 메인 홈페이지로 돌아가기
+    </a>
+
+</main>
+
+<footer>
+
+    🐼 Pink Panda Mini NPU Guide 🐼
+
+    <br>
+
+    🌸 계산 원리부터 성능 분석까지 함께 배워요 🌸
+
+</footer>
+
+<script>
+
+    const sizes = [3, 5, 13, 25];
+
+    const trials = 10;
+
+    const repetitions = 1000;
+
+    let selectedSize = 3;
+
+    let measuredTimes = {};
+
+    let busy = false;
+
+    function selectSize(n) {
+
+        if (busy) {
+            return;
+        }
+
+        selectedSize = n;
+
+        const matrix = document.getElementById("matrix");
+
+        matrix.innerHTML = "";
+
+        matrix.style.gridTemplateColumns =
+            `repeat(${n}, 1fr)`;
+
+        const center = Math.floor(n / 2);
+
+        for (let i = 0; i < n; i++) {
+
+            for (let j = 0; j < n; j++) {
+
+                const cell = document.createElement("div");
+
+                const filled =
+                    i === center || j === center;
+
+                cell.className =
+                    filled ? "cell filled" : "cell";
+
+                if (n <= 5) {
+                    cell.textContent = filled ? "1" : "0";
+                }
+
+                matrix.appendChild(cell);
+
+            }
+
+        }
+
+        document.getElementById("matrix-title").textContent =
+            `${n} × ${n} 배열`;
+
+        document.getElementById("single-count").textContent =
+            `${n} × ${n} = ${n * n}회`;
+
+        document.getElementById("double-count").textContent =
+            `${n * n} × 2 = ${(2 * n * n).toLocaleString()}회`;
+
+        document.getElementById("ratio").textContent =
+            `${(n * n / 9).toFixed(2)}배`;
+
+        document.getElementById("benchmark-size").textContent =
+            `${n}×${n}`;
+
+        for (const size of sizes) {
+
+            document.getElementById(`size-${size}`)
+                .classList.toggle("active", size === n);
+
+        }
+
+        clearDetail();
+
+    }
+
+    function drawOperationChart() {
+
+        const chart =
+            document.getElementById("operation-chart");
+
+        chart.innerHTML = "";
+
+        for (const n of sizes) {
+
+            const count = n * n;
+
+            const row = document.createElement("div");
+
+            row.className = "bar-row";
+
+            row.innerHTML = `
+                <div class="bar-label">${n}×${n}</div>
+                <div class="bar-track">
+                    <div class="bar"
+                         style="width: ${count / 625 * 100}%">
+                    </div>
+                </div>
+                <div class="bar-value">${count}회</div>
+            `;
+
+            chart.appendChild(row);
+
+        }
+
+    }
+
+    function createPattern(n, type) {
+
+        const pattern = [];
+
+        const center = Math.floor(n / 2);
+
+        for (let i = 0; i < n; i++) {
+
+            const row = [];
+
+            for (let j = 0; j < n; j++) {
+
+                let value = 0;
+
+                if (type === "Cross") {
+
+                    value =
+                        i === center || j === center ? 1 : 0;
+
+                } else {
+
+                    value =
+                        i === j || i + j === n - 1 ? 1 : 0;
+
+                }
+
+                row.push(value);
+
+            }
+
+            pattern.push(row);
+
+        }
+
+        return pattern;
+
+    }
+
+    function mac(pattern, filterData) {
+
+        const n = pattern.length;
+
+        let score = 0;
+
+        for (let i = 0; i < n; i++) {
+
+            for (let j = 0; j < n; j++) {
+
+                score += pattern[i][j] * filterData[i][j];
+
+            }
+
+        }
+
+        return score;
+
+    }
+
+    function benchmark(n) {
+
+        const pattern = createPattern(n, "Cross");
+
+        const crossFilter = createPattern(n, "Cross");
+
+        const xFilter = createPattern(n, "X");
+
+        const times = [];
+
+        let checksum = 0;
+
+        // 본 측정 전 준비 실행
+
+        for (let i = 0; i < 100; i++) {
+
+            mac(pattern, crossFilter);
+
+            mac(pattern, xFilter);
+
+        }
+
+        // 10회 반복 측정
+
+        for (let trial = 0; trial < trials; trial++) {
+
+            const start = performance.now();
+
+            for (let i = 0; i < repetitions; i++) {
+
+                checksum += mac(pattern, crossFilter);
+
+                checksum += mac(pattern, xFilter);
+
+            }
+
+            const end = performance.now();
+
+            times.push((end - start) / repetitions);
+
+        }
+
+        const average =
+            times.reduce((sum, value) => sum + value, 0)
+            / times.length;
+
+        return {
+
+            n: n,
+
+            times: times,
+
+            average: average,
+
+            crossScore: mac(pattern, crossFilter),
+
+            xScore: mac(pattern, xFilter),
+
+            checksum: checksum
+
+        };
+
+    }
+
+    function showResult(result) {
+
+        const tbody =
+            document.getElementById("trial-results");
+
+        tbody.innerHTML = "";
+
+        result.times.forEach((time, index) => {
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${index + 1}회</td>
+                <td>${time.toFixed(8)}</td>
+            `;
+
+            tbody.appendChild(row);
+
+        });
+
+        document.getElementById("benchmark-status").textContent =
+            `${result.n}×${result.n} 배열 측정 완료!`;
+
+        document.getElementById("average-time").textContent =
+            `${result.average.toFixed(8)} ms`;
+
+        document.getElementById("benchmark-score").textContent =
+            `Cross 점수: ${result.crossScore} / ` +
+            `X 점수: ${result.xScore} / ` +
+            `검증 합계: ${result.checksum.toLocaleString()}`;
+
+        measuredTimes[result.n] = result.average;
+
+        document.getElementById(`time-${result.n}`).textContent =
+            result.average.toFixed(8);
+
+        drawTimeChart();
+
+    }
+
+    function drawTimeChart() {
+
+        const chart =
+            document.getElementById("time-chart");
+
+        chart.innerHTML = "";
+
+        const values = Object.values(measuredTimes);
+
+        if (values.length === 0) {
+
+            chart.textContent =
+                "아직 측정하지 않았습니다.";
+
+            return;
+
+        }
+
+        const maximum = Math.max(...values);
+
+        for (const n of sizes) {
+
+            if (!(n in measuredTimes)) {
+                continue;
+            }
+
+            const time = measuredTimes[n];
+
+            const width =
+                maximum > 0 ? time / maximum * 100 : 0;
+
+            const row = document.createElement("div");
+
+            row.className = "bar-row";
+
+            row.innerHTML = `
+                <div class="bar-label">${n}×${n}</div>
+                <div class="bar-track">
+                    <div class="bar"
+                         style="width: ${width}%">
+                    </div>
+                </div>
+            `;
+
+            chart.appendChild(row);
+
+            const label = document.createElement("p");
+
+            label.style.textAlign = "right";
+
+            label.textContent =
+                `${time.toFixed(8)} ms`;
+
+            chart.appendChild(label);
+
+        }
+
+    }
+
+    function setBusy(value) {
+
+        busy = value;
+
+        document.getElementById("measure-button").disabled =
+            value;
+
+        document.getElementById("all-button").disabled =
+            value;
+
+        document.getElementById("reset-button").disabled =
+            value;
+
+        for (const n of sizes) {
+
+            document.getElementById(`size-${n}`).disabled =
+                value;
+
+        }
+
+    }
+
+    function measureSelected() {
+
+        if (busy) {
+            return;
+        }
+
+        setBusy(true);
+
+        const n = selectedSize;
+
+        document.getElementById("benchmark-status").textContent =
+            "측정 중입니다. 잠시 기다려 주세요.";
+
+        setTimeout(() => {
+
+            try {
+
+                const result = benchmark(n);
+
+                showResult(result);
+
+            } catch (error) {
+
+                document.getElementById(
+                    "benchmark-status"
+                ).textContent =
+                    "측정 오류: " + error.message;
+
+            } finally {
+
+                setBusy(false);
+
+            }
+
+        }, 50);
+
+    }
+
+    function measureAll() {
+
+        if (busy) {
+            return;
+        }
+
+        setBusy(true);
+
+        document.getElementById("benchmark-status").textContent =
+            "모든 배열 크기를 측정하고 있습니다.";
+
+        setTimeout(() => {
+
+            try {
+
+                let selectedResult = null;
+
+                for (const n of sizes) {
+
+                    const result = benchmark(n);
+
+                    measuredTimes[n] = result.average;
+
+                    document.getElementById(
+                        `time-${n}`
+                    ).textContent =
+                        result.average.toFixed(8);
+
+                    if (n === selectedSize) {
+
+                        selectedResult = result;
+
+                    }
+
+                }
+
+                if (selectedResult) {
+
+                    showResult(selectedResult);
+
+                }
+
+                document.getElementById(
+                    "benchmark-status"
+                ).textContent =
+                    "모든 배열 크기 측정 완료! " +
+                    "상세 결과: " + selectedSize + "×" + selectedSize;
+
+                drawTimeChart();
+
+            } catch (error) {
+
+                document.getElementById(
+                    "benchmark-status"
+                ).textContent =
+                    "측정 오류: " + error.message;
+
+            } finally {
+
+                setBusy(false);
+
+            }
+
+        }, 50);
+
+    }
+
+    function clearDetail() {
+
+        document.getElementById("trial-results").innerHTML =
+            "";
+
+        document.getElementById("average-time").textContent =
+            "-";
+
+        document.getElementById("benchmark-score").textContent =
+            "";
+
+        document.getElementById("benchmark-status").textContent =
+            "측정 버튼을 눌러주세요.";
+
+    }
+
+    function resetResults() {
+
+        if (busy) {
+            return;
+        }
+
+        measuredTimes = {};
+
+        clearDetail();
+
+        for (const n of sizes) {
+
+            document.getElementById(`time-${n}`).textContent =
+                "미측정";
+
+        }
+
+        drawTimeChart();
+
+    }
+
+    selectSize(3);
+
+    drawOperationChart();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>핑크판다 Mini NPU 학습 가이드</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Malgun Gothic", sans-serif;
+            background: #fff0f6;
+            color: #4a3040;
+            line-height: 1.8;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ff69b4, #ffb6d9);
+            color: white;
+            text-align: center;
+            padding: 45px 20px;
+        }
+
+        .panda {
+            font-size: 80px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 10px 0;
+        }
+
+        header p {
+            font-size: 19px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: auto;
+            padding: 25px 18px;
+        }
+
+        .intro {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #ffc1dc;
+        }
+
+        h2 {
+            color: #d63384;
+            font-size: 25px;
+        }
+
+        .mission-info {
+            background: #ffe4ef;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 18px;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .lesson {
+            background: white;
+            border: 2px solid #ffc1dc;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 5px 12px #f8c9df;
+        }
+
+        .lesson h3 {
+            color: #d63384;
+            font-size: 22px;
+            margin-top: 0;
+        }
+
+        .lesson p {
+            font-size: 18px;
+        }
+
+        .lesson-icon {
+            font-size: 42px;
+        }
+
+        .readme-button {
+            display: block;
+            background: #d63384;
+            color: white;
+            padding: 16px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 20px;
+            margin-top: 30px;
+        }
+
+        .readme-button:hover {
+            background: #b81f6c;
+        }
+
+        footer {
+            background: #ffc1dc;
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .menu {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            .lesson h3 {
+                font-size: 21px;
+            }
+
+            .panda {
+                font-size: 65px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="panda">🐼</div>
+
+        <h1>핑크판다 Mini NPU 학습 가이드</h1>
+
+        <p>AI가 계산하는 방식을 흉내 내는 작은 계산기 만들기</p>
+
+        <p>🌸 초등학생과 비전공자도 쉽게 배우는 AI 계산 원리 🌸</p>
+    </header>
+
+    <main>
+
+        <section class="intro">
+
+            <h2>📚 미션 소개</h2>
+
+            <p>
+                컴퓨터는 그림을 숫자로 표현하고,
+                숫자를 곱하고 더하여 모양을 구별합니다.
+            </p>
+
+            <p>
+                핑크판다와 함께 MAC 연산부터
+                Mini NPU 시뮬레이터의 핵심 원리까지
+                쉽고 재미있게 공부해 봅시다.
+            </p>
+
+            <div class="mission-info">
+                📌 분야: 입학연수<br>
+                📌 구분: 개발 입문<br>
+                📌 학습시간: 40시간<br>
+                📌 필수/선택: 필수<br>
+                📌 개발 언어: Python
+            </div>
+
+        </section>
+
+        <h2>🎯 여섯 가지 핵심 학습 목표</h2>
+
+       
+<div class="menu">
+
+    <section class="lesson">
+
+        <div class="lesson-icon">🧮</div>
+
+        <h3>1. MAC 연산</h3>
+
+        <p>
+            숫자를 곱하고 그 결과를 모두 더하는
+            AI 계산의 기본 원리를 배웁니다.
+        </p>
+
+        <a href="mac.html"
+           style="
+               display: block;
+               background: #d63384;
+               color: white;
+               padding: 14px;
+               border-radius: 12px;
+               text-align: center;
+               text-decoration: none;
+               font-size: 20px;
+               font-weight: bold;
+               margin-top: 15px;
+           ">
+            🐼 MAC 연산 공부하기
+        </a>
+
+    </section>
+
+    <section class="lesson">
+
+        <div class="lesson-icon">🔍</div>
+
+        <h3>2. 입력 패턴과 필터</h3>
+
+        <p>
+            십자가와 X 모양을 숫자로 비교하고
+            MAC 점수를 계산하는 방법을 배웁니다.
+        </p>
+
+        <a href="pattern.html"
+           style="
+               display: block;
+               background: #d63384;
+               color: white;
+               padding: 14px;
+               border-radius: 12px;
+               text-align: center;
+               text-decoration: none;
+               font-size: 20px;
+               font-weight: bold;
+               margin-top: 15px;
+           ">
+            🐼 입력 패턴과 필터 공부하기
+        </a>
+
+    </section>
+
+
+
+            <section class="lesson">
+                <div class="lesson-icon">📂</div>
+                <h3>3. JSON과 라벨 정규화</h3>
+                <p>
+                    데이터를 저장하는 방법과
+                    서로 다른 이름을 통일하는 이유를 배웁니다.
+                </p>
+                
+<a href="json.html"
+   style="
+       display: block;
+       background: #d63384;
+       color: white;
+       padding: 14px;
+       border-radius: 12px;
+       text-align: center;
+       text-decoration: none;
+       font-size: 20px;
+       font-weight: bold;
+       margin-top: 15px;
+   ">
+    🐼 JSON과 라벨 정규화 공부하기
+</a>
+
+            </section>
+
+            <section class="lesson">
+                <div class="lesson-icon">🔢</div>
+                <h3>4. 부동소수점과 epsilon</h3>
+                <p>
+                    컴퓨터의 작은 계산 오차와
+                    허용오차를 이용한 판정 방법을 배웁니다.
+                </p>
+
+<a href="epsilon.html"
+   style="
+       display: block;
+       background: #d63384;
+       color: white;
+       padding: 14px;
+       border-radius: 12px;
+       text-align: center;
+       text-decoration: none;
+       font-size: 20px;
+       font-weight: bold;
+       margin-top: 15px;
+   ">
+    🐼 부동소수점과 epsilon 공부하기
+</a>
+
+            </section>
+
+            <section class="lesson">
+                <div class="lesson-icon">⏱️</div>
+                <h3>5. 성능 분석과 O(N²)</h3>
+                <p>
+                    배열 크기에 따른 연산 횟수와
+                    실행 시간의 변화 원리를 배웁니다.
+                </p>
+                <section class="lesson">
+    <div class="lesson-icon">⏱️</div>
+    <h3>5. 성능 분석과 O(N²)</h3>
+    <p>
+        배열 크기에 따른 연산 횟수와
+        실행 시간의 변화를 배웁니다.
+    </p>
+</section>
+            </section>
+
+            <section class="lesson">
+                <div class="lesson-icon">🛠️</div>
+                <h3>6. 실패 원인 분석</h3>
+                <a href="failure.html"
+   style="display: block; background: #d63384; color: white; padding: 14px; border-radius: 12px; text-align: center; text-decoration: none; font-size: 20px; font-weight: bold; margin-top: 15px;">
+    🐼 실패 원인 분석 공부하기
+</a>
+                <p>
+                    데이터 문제, 로직 문제,
+                    수치 비교 문제를 구별하고 해결합니다.
+                </p>
+            </section>
+
+        </div>
+
+        <a class="readme-button"
+           href="https://github.com/jinsoon41088-coder/pink-panda-mini-npu-guide#readme"
+           target="_blank"
+           rel="noopener noreferrer">
+
+            📖 전체 미션 상세 설명 보기
+
+        </a>
+
+    </main>
+
+    <footer>
+        <p>🐼 Pink Panda Mini NPU Guide 🐼</p>
+        <p>포기하지 않고 한 걸음씩 성장하는 AI 개발 공부</p>
+        <p>🌸 함께 배우고 함께 성장해요 🌸</p>
+    </footer>
+
+</body>
+</html>

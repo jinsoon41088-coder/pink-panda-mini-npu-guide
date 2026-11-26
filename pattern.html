@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>핑크판다 입력 패턴과 필터 학습</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Malgun Gothic", sans-serif;
+            background: #fff0f6;
+            color: #4a3040;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        header {
+            background: linear-gradient(135deg, #c2185b, #e83e8c);
+            color: white;
+            text-align: center;
+            padding: 35px 15px;
+        }
+
+        .panda {
+            font-size: 70px;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        h2 {
+            color: #c2185b;
+            font-size: 25px;
+        }
+
+        h3 {
+            color: #c2185b;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        section {
+            background: white;
+            border: 2px solid #ffc1dc;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .example {
+            background: #ffe4ef;
+            border-radius: 15px;
+            padding: 18px;
+            margin: 15px 0;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .pattern-box {
+            background: #fff5fa;
+            border: 2px solid #ffc1dc;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            max-width: 210px;
+            gap: 6px;
+            margin: 20px auto;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff0f6;
+            border: 2px solid #f5a9ce;
+            border-radius: 8px;
+            font-size: 25px;
+            font-weight: bold;
+            color: #c2185b;
+        }
+
+        .active {
+            background: #d63384;
+            color: white;
+        }
+
+        button {
+            background: #c2185b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 18px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ad1457;
+        }
+
+        button:disabled {
+            background: #777;
+            cursor: default;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 3px solid #673ab7;
+            outline-offset: 3px;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .calculation {
+            background: #ffe4ef;
+            padding: 18px;
+            border-radius: 15px;
+            text-align: center;
+            overflow-wrap: anywhere;
+            margin-top: 20px;
+        }
+
+        .score {
+            color: #c2185b;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .result {
+            background: #ffe4ef;
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .highlight {
+            outline: 3px solid #673ab7;
+            outline-offset: 1px;
+        }
+
+        .home-button {
+            display: block;
+            background: #c2185b;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        pre {
+            background: #fff0f6;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            overflow-x: auto;
+        }
+
+        footer {
+            background: #ffc1dc;
+            text-align: center;
+            padding: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                font-size: 18px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="panda">🐼</div>
+
+    <h1>핑크판다 입력 패턴과 필터 학습</h1>
+
+    <p>그림을 숫자로 바꾸고 AI처럼 비교해 봐요!</p>
+</header>
+
+<main>
+
+    <section>
+        <h2>📚 1. 입력 패턴이란 무엇일까요?</h2>
+
+        <p>
+            입력 패턴은 컴퓨터가 어떤 모양인지
+            판단해야 하는 데이터입니다.
+        </p>
+
+        <p>
+            사람은 그림을 보고 모양을 구별하지만,
+            컴퓨터는 그림을 숫자로 표현하여 계산합니다.
+        </p>
+
+        <div class="example">
+            ■ 색칠된 칸 = 1<br>
+            □ 색칠되지 않은 칸 = 0
+        </div>
+
+        <div class="comparison">
+
+            <div class="pattern-box">
+                <h3>십자가 모양</h3>
+                <div id="cross-example" class="matrix"></div>
+            </div>
+
+            <div class="pattern-box">
+                <h3>X 모양</h3>
+                <div id="x-example" class="matrix"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <section>
+        <h2>🔍 2. 필터란 무엇일까요?</h2>
+
+        <p>
+            이번 미션에서 필터는 입력 패턴과
+            비교하기 위해 준비한 기준 모양입니다.
+        </p>
+
+        <div class="example">
+            📝 입력 패턴 = 맞혀야 하는 문제<br>
+            📖 필터 = 비교할 기준 모양
+        </div>
+
+        <p>
+            입력 패턴을 십자가 필터와 X 필터에
+            각각 비교하여 MAC 점수를 계산합니다.
+        </p>
+    </section>
+
+    <section>
+        <h2>🧮 3. 유사도 점수 계산 원리</h2>
+
+        <p>
+            입력 패턴과 필터의 같은 위치에 있는
+            숫자끼리 곱합니다.
+        </p>
+
+        <p>
+            곱셈 결과를 모두 더하면 MAC 점수가 됩니다.
+        </p>
+
+        <div class="example">
+            ① 같은 위치의 숫자 찾기<br>
+            ② 두 숫자 곱하기<br>
+            ③ 곱셈 결과 누적하기<br>
+            ④ 두 필터의 최종 점수 비교하기<br>
+            ⑤ 모양 판정하기
+        </div>
+
+        <p>
+            이번 미션에서는 MAC 점수가 더 높은
+            필터를 선택합니다.
+        </p>
+
+        <p>
+            단, MAC 점수는 확률이나 백분율이 아니며
+            모든 상황에서 모양의 유사도를 정확하게
+            나타내는 것은 아닙니다.
+        </p>
+    </section>
+
+    <section>
+        <h2>🎮 4. 한 칸씩 MAC 연산 체험하기</h2>
+
+        <p>
+            입력 모양을 선택한 다음
+            '다음 칸 계산하기' 버튼을 눌러보세요.
+        </p>
+
+        <div class="button-group">
+            <button onclick="selectPattern('cross')">
+                십자가 입력
+            </button>
+
+            <button onclick="selectPattern('x')">
+                X 입력
+            </button>
+
+            <button onclick="selectPattern('zero')">
+                빈 모양 입력
+            </button>
+        </div>
+
+        <h3 style="text-align:center;">입력 패턴</h3>
+
+        <div id="input-matrix" class="matrix"></div>
+
+        <div class="comparison">
+
+            <div class="pattern-box">
+
+                <h3>십자가 필터</h3>
+
+                <div id="cross-filter" class="matrix"></div>
+
+                <p>누적 점수</p>
+
+                <div id="cross-score" class="score">0점</div>
+
+            </div>
+
+            <div class="pattern-box">
+
+                <h3>X 필터</h3>
+
+                <div id="x-filter" class="matrix"></div>
+
+                <p>누적 점수</p>
+
+                <div id="x-score" class="score">0점</div>
+
+            </div>
+
+        </div>
+
+        <div id="calculation"
+             class="calculation"
+             aria-live="polite">
+
+            계산을 시작해 주세요.
+
+        </div>
+
+        <div class="button-group">
+
+            <button id="next-button" onclick="nextStep()">
+                다음 칸 계산하기
+            </button>
+
+            <button onclick="calculateAll()">
+                전체 계산하기
+            </button>
+
+            <button onclick="resetCalculation()">
+                다시 계산하기
+            </button>
+
+        </div>
+
+        <div id="result"
+             class="result"
+             aria-live="polite">
+
+            판정 대기 중
+
+        </div>
+    </section>
+
+    <section>
+        <h2>💻 5. Python 코드로 이해하기</h2>
+
+        <pre><code>def mac(pattern, filter_data):
+    score = 0.0
+    n = len(pattern)
+
+    for i in range(n):
+        for j in range(n):
+            score += pattern[i][j] * filter_data[i][j]
+
+    return score</code></pre>
+
+        <p>
+            첫 번째 for문은 행을 반복하고,
+            두 번째 for문은 열을 반복합니다.
+        </p>
+
+        <p>
+            같은 위치의 숫자를 곱한 결과를
+            score에 계속 더합니다.
+        </p>
+
+        <p>
+            3×3 배열에서는 필터 하나당
+            총 9회의 MAC 연산을 수행합니다.
+        </p>
+    </section>
+
+    <section>
+        <h2>🎯 6. 동료평가 예상 질문과 답변</h2>
+
+        <p><strong>Q. 입력 패턴이란 무엇인가요?</strong></p>
+
+        <p>
+            A. 컴퓨터가 어떤 모양인지 판단해야 하는
+            입력 데이터입니다.
+        </p>
+
+        <p><strong>Q. 필터란 무엇인가요?</strong></p>
+
+        <p>
+            A. 입력 패턴과 비교하기 위해 준비한
+            기준 데이터입니다.
+        </p>
+
+        <p><strong>Q. MAC 점수는 어떻게 계산하나요?</strong></p>
+
+        <p>
+            A. 입력 패턴과 필터의 같은 위치에 있는
+            숫자끼리 곱하고 그 결과를 모두 더합니다.
+        </p>
+
+        <p><strong>Q. 두 필터의 점수가 같으면 어떻게 하나요?</strong></p>
+
+        <p>
+            A. 이번 미션에서는 점수 차이가
+            epsilon보다 작으면 UNDECIDED로 판정합니다.
+        </p>
+    </section>
+
+    <a href="mac.html" class="home-button">
+        🧮 이전 학습: MAC 연산
+    </a>
+
+    <a href="index.html" class="home-button">
+        🏠 메인 홈페이지로 돌아가기
+    </a>
+
+</main>
+
+<footer>
+    🐼 Pink Panda Mini NPU Guide 🐼
+    <br>
+    🌸 그림을 숫자로 바꾸고 AI 계산 원리를 배워요 🌸
+</footer>
+
+<script>
+
+    const cross = [
+        0, 1, 0,
+        1, 1, 1,
+        0, 1, 0
+    ];
+
+    const xFilter = [
+        1, 0, 1,
+        0, 1, 0,
+        1, 0, 1
+    ];
+
+    let pattern = [...cross];
+
+    let step = 0;
+
+    let crossScore = 0;
+
+    let xScore = 0;
+
+    function drawMatrix(id, values, highlight = -1) {
+
+        const container = document.getElementById(id);
+
+        container.innerHTML = "";
+
+        values.forEach((value, index) => {
+
+            const cell = document.createElement("div");
+
+            cell.className = "cell";
+
+            if (value === 1) {
+                cell.classList.add("active");
+            }
+
+            if (index === highlight) {
+                cell.classList.add("highlight");
+            }
+
+            cell.textContent = value;
+
+            container.appendChild(cell);
+
+        });
+    }
+
+    function render(highlight = -1) {
+
+        drawMatrix("input-matrix", pattern, highlight);
+
+        drawMatrix("cross-filter", cross, highlight);
+
+        drawMatrix("x-filter", xFilter, highlight);
+
+        document.getElementById("cross-score").textContent =
+            crossScore + "점";
+
+        document.getElementById("x-score").textContent =
+            xScore + "점";
+
+        document.getElementById("next-button").disabled =
+            step >= 9;
+
+    }
+
+    function selectPattern(type) {
+
+        if (type === "cross") {
+            pattern = [...cross];
+        } else if (type === "x") {
+            pattern = [...xFilter];
+        } else {
+            pattern = Array(9).fill(0);
+        }
+
+        resetCalculation();
+
+    }
+
+    function resetCalculation() {
+
+        step = 0;
+
+        crossScore = 0;
+
+        xScore = 0;
+
+        document.getElementById("calculation").textContent =
+            "계산을 시작해 주세요.";
+
+        document.getElementById("result").textContent =
+            "판정 대기 중";
+
+        render();
+
+    }
+
+    function nextStep() {
+
+        if (step >= 9) {
+            return;
+        }
+
+        const index = step;
+
+        const row = Math.floor(index / 3) + 1;
+
+        const col = index % 3 + 1;
+
+        const crossProduct = pattern[index] * cross[index];
+
+        const xProduct = pattern[index] * xFilter[index];
+
+        crossScore += crossProduct;
+
+        xScore += xProduct;
+
+        step++;
+
+        document.getElementById("calculation").innerHTML =
+            `<strong>${step} / 9번째 계산</strong><br>
+             위치: ${row}행 ${col}열<br>
+             십자가: ${pattern[index]} × ${cross[index]}
+             = ${crossProduct}<br>
+             X: ${pattern[index]} × ${xFilter[index]}
+             = ${xProduct}`;
+
+        render(index);
+
+        if (step === 9) {
+            showResult();
+        }
+
+    }
+
+    function calculateAll() {
+
+        while (step < 9) {
+            nextStep();
+        }
+
+    }
+
+    function showResult() {
+
+        const epsilon = 1e-9;
+
+        const result = document.getElementById("result");
+
+        if (Math.abs(crossScore - xScore) < epsilon) {
+
+            result.textContent =
+                "⚖️ 판정 불가 (UNDECIDED)";
+
+        } else if (crossScore > xScore) {
+
+            result.textContent =
+                "🎉 십자가 (Cross)";
+
+        } else {
+
+            result.textContent =
+                "🎉 X 모양 (X)";
+
+        }
+
+    }
+
+    drawMatrix("cross-example", cross);
+
+    drawMatrix("x-example", xFilter);
+
+    resetCalculation();
+
+</script>
+
+</body>
+</html>
